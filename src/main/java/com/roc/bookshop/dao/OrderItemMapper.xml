@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.roc.bookshop.dao.OrderItemMapper">
+	<resultMap type="orderItem" id="BaseResultMap">
+		<id column="orderItem_id" property="orderItemId"/>
+		<result column="quantity" property="quantity"/>
+		<result column="sub_total" property="subTotal"/>
+		<association property="book">
+			<id column="b_id" property="bId"/>
+			<result column="b_name" property="bName"/>
+			<result column="curr_price" property="currPrice"/>
+			<result column="image_b" property="imageB"/>
+		</association>
+		<association column="o_id" property="order">
+			<id column="o_id" property="oId"/>
+			<!-- <result column="order_time" property="orderTime"/>
+			<result column="total" property="total"/>
+			<result column="status" property="status"/>
+			<result column="address" property="address"/>
+			<association property="owner" column="u_id">
+				<id column="u_id" property="uId"/>
+			</association> -->
+		</association>
+	</resultMap>
+	<select id="selectOrderItemByOrderId" resultMap="BaseResultMap">
+		select * from t_orderitem where o_id=#{oId}
+	</select>
+
+	<insert id="add">
+		insert into t_orderitem(`orderItem_id`,`quantity`,`sub_total`,`b_id`,`b_name`,`curr_price`,`image_b`,`o_id`)
+		values(#{orderItemId},#{quantity},#{subTotal},#{book.bId},#{book.bName},#{book.currPrice},#{book.imageB},#{order.oId})
+	</insert>
+</mapper>

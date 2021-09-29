@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.roc.bookshop.dao.CartItemMapper">
+	<resultMap type="cartItem" id="BaseResultMap">
+		<id column="cartitem_id" property="cartitemId"/>
+		<result column="quantity" property="quantity"/>
+		<result column="order_by" property="orderBy"/>
+		<association property="book" column="b_id">
+			<id column="b_id" property="bId"/>
+			<result column="b_name" property="bName"/>
+			<result column="author" property="author"/>
+			<result column="price" property="price"/>
+			<result column="curr_price" property="currPrice"/>
+			<result column="discount" property="discount"/>
+			<result column="press" property="press"/>
+			<result column="publish_time" property="publishTime"/>
+			<result column="edition" property="edition"/>
+			<result column="page_num" property="pageNum"/>
+			<result column="word_num" property="wordNum"/>
+			<result column="print_time" property="printTime"/>
+			<result column="book_size" property="bookSize"/>
+			<result column="paper" property="paper"/>
+			<result column="c_id" property="cId"/>
+			<result column="image_w" property="imageW"/>
+			<result column="image_b" property="imageB"/>
+			<result column="inventory" property="inventory"/>
+			<result column="on_sale" property="onSale"/>
+			<!-- <association property="category" column="c_id">
+				<id column="c_id" property="cId"/>
+				<result column="c_name" property="cName"/>
+				<result column="p_id" property="pId"/>
+				<result column="desc" property="desc"/>
+				<result column="order_by" property="orderBy"/>
+			</association> -->
+		</association>
+		<association property="user" column="u_id">
+			<id column="u_id" property="uId"/>
+			<result column="login_name" property="loginName"/>
+			<result column="login_pwd" property="loginPwd"/>
+			<result column="email" property="email"/>
+			<result column="status" property="status"/>
+			<result column="activation_code" property="activationCode"/>
+		</association>
+	</resultMap>
+
+	<select id="findByUser" resultMap="BaseResultMap">
+		select * from t_cartitem c, t_book b where c.b_id=b.b_id and u_id=#{uId} order by c.order_by
+	</select>
+
+	<select id="findByUidAndBid" resultMap="BaseResultMap">
+		select * from t_cartitem where u_id=#{uId} and b_id=#{bId}
+	</select>
+
+	<update id="updateQuantity">
+		update t_cartitem set quantity=#{quantity} where cartItem_id=#{cartItemId}
+	</update>
+
+	<insert id="addCartItem">
+		insert into t_cartitem(`cartItem_id`,`quantity`,`b_id`,`u_id`)
+		values(#{cartitemId},#{quantity},#{book.bId},#{user.uId})
+	</insert>
+
+	<delete id="batchDelete">
+		delete from t_cartitem where cartItem_id in
+		<foreach collection="array" open="(" close=")" separator="," item="cartItemId">
+			#{cartItemId}
+		</foreach>
+	</delete>
+
+	<select id="findByCartItemId" resultMap="BaseResultMap">
+		select * from t_cartitem c, t_book b where c.b_id=b.b_id and c.cartItem_id=#{cartitemId}
+	</select>
+
+	<select id="loadCartItems" resultMap="BaseResultMap">
+		select * from t_cartitem c, t_book b where c.b_id=b.b_id and c.cartItem_id in
+		<foreach collection="array" open="(" close=")" separator="," item="cartItemId">
+			#{cartItemId}
+		</foreach>
+	</select>
+</mapper>

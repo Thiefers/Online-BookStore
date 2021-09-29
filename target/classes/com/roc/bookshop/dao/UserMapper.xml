@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.roc.bookshop.dao.UserMapper">
+	<select id="ajaxValidateLoginName" resultType="java.lang.String">
+		select u_id
+		from t_user where login_name=#{login_name};
+	</select>
+
+	<select id="ajaxValidateEmail" resultType="java.lang.String">
+		select u_id from
+		t_user where email=#{email};
+	</select>
+
+	<insert id="add">
+		insert into t_user(`u_id`,`login_name`,`login_pwd`,`email`,`status`,`activation_code`)
+		values(#{uId},#{loginName},#{loginPwd},#{email},#{status},#{activationCode})
+	</insert>
+
+	<select id="findUserByActivationCode" resultType="user">
+		select * from t_user where activation_code=#{activationCode}
+	</select>
+
+	<update id="updateStatus">
+		update t_user set status=#{status,jdbcType=TINYINT} where u_id=#{uId}
+	</update>
+
+	<select id="findUserByLoginNameAndPassword" resultType="user">
+		select * from t_user where login_name=#{loginName} and login_pwd=#{loginPwd}
+	</select>
+
+	<select id="findUserByUIdAndLoginPwd" resultType="user">
+		select * from t_user where u_id=#{uId} and login_pwd=#{loginPwd}
+	</select>
+
+	<update id="updatePassword">
+		update t_user set login_pwd=#{loginPwd} where u_id=#{uId}
+	</update>
+</mapper>

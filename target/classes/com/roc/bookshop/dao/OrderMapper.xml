@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.roc.bookshop.dao.OrderMapper">
+	<resultMap type="order" id="BaseResultMap">
+		<id column="o_id" property="oId"/>
+		<result column="order_time" property="orderTime"/>
+		<result column="total" property="total"/>
+		<result column="status" property="status"/>
+		<result column="address" property="address"/>
+		<result column="evaluate" property="evaluate"/>
+		<association property="owner" column="u_id">
+			<id column="u_id" property="uId"/>
+		</association>
+	</resultMap>
+	<sql id="selectCombination">
+		<where>
+			<if test="uId != null">
+				u_id=#{uId}
+			</if>
+			<if test="status != null">
+				status=#{status}
+			</if>
+		</where>
+	</sql>
+	<select id="selectOrderByOrderVo" resultMap="BaseResultMap">
+		select * from t_order
+		<include refid="selectCombination"/>
+		order by order_time desc limit #{from},#{to}
+	</select>
+	<select id="selectOrderCountByOrderVo" resultType="java.lang.Integer">
+		select count(*) from t_order
+		<include refid="selectCombination"/>
+	</select>
+
+	<insert id="add">
+		insert into t_order (`o_id`,`order_time`,`total`,`status`,`address`,`u_id`)
+    	values (#{oId},#{orderTime},#{total},#{status},#{address},#{owner.uId})
+	</insert>
+
+	<select id="loadByOid" resultMap="BaseResultMap">
+		select * from t_order where o_id=#{oId}
+	</select>
+
+	<select id="findStatusByOid" resultType="java.lang.Integer">
+		select status from t_order where o_id=#{oId}
+	</select>
+
+	<update id="updateStatusByOid">
+		update t_order set status=#{status} where o_id=#{oId}
+	</update>
+
+	<select id="findAll" resultMap="BaseResultMap">
+		select * from t_order order by order_time desc limit #{from},#{to}
+	</select>
+
+	<select id="getTotal" resultType="int">
+		select count(*) from t_order
+	</select>
+
+	<select id="getCharts" resultType="map">
+        select count(*) as value,status as name
+        from t_order group by status
+    </select>
+
+	<select id="getOrdersFromStatusOf4" resultMap="BaseResultMap">
+		select * from t_order where status=4
+	</select>
+
+	<update id="evaluate">
+		update t_order set evaluate=#{evaluate} where o_Id=#{oId}
+	</update>
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.roc.bookshop.dao.BookMapper">
+	<sql id="selectCombination">
+		<where>
+			<if test="book.cId!=null">
+		      AND c_id=#{book.cId}
+		    </if>
+		    <if test="book.press!=null">
+		      AND press like concat('%',#{book.press},'%')
+		    </if>
+		    <if test="book.author!=null">
+		      AND author like concat('%',#{book.author},'%')
+		    </if>
+		    <if test="book.bName!=null">
+		      AND b_name like concat('%',#{book.bName},'%')
+		    </if>
+		    <if test="book.bId!=null">
+		      AND b_id like concat('%',#{book.bId},'%')
+		    </if>
+		    <if test="book.onSale!=null">
+		      AND on_sale=1
+		    </if>
+		</where>
+	</sql>
+	<select id="selectBookCount" resultType="java.lang.Integer">
+		select count(*) from t_book
+		<include refid="selectCombination"/>
+	</select>
+	<select id="selectBookFromTo" resultType="book">
+		select * from t_book
+		<include refid="selectCombination"/>
+		order by order_by
+		limit #{from},#{to}
+	</select>
+	<select id="selectBookByBid" resultType="book">
+		select * from t_book where b_id=#{bId}
+	</select>
+	<select id="findBookCountByCategory" resultType="java.lang.Integer">
+		select count(*) from t_book where c_id=#{cId}
+	</select>
+	<insert id="add">
+		insert into t_book
+		(`b_id`,`b_name`,`author`,`price`,`curr_price`,`discount`,`press`,`publish_time`,`edition`,`page_num`,
+		`word_num`,`print_time`,`book_size`,`paper`,`c_id`,`image_w`,`image_b`,`inventory`,`on_sale`)
+		values
+		(#{bId},#{bName},#{author},#{price},#{currPrice},#{discount},#{press},#{publishTime},#{edition},#{pageNum},
+		#{wordNum},#{printTime},#{bookSize},#{paper},#{cId},#{imageW},#{imageB},#{inventory},#{onSale})
+	</insert>
+	<update id="edit">
+		update t_book 
+		set `b_name`=#{bName},`author`=#{author},`price`=#{price},`curr_price`=#{currPrice},`discount`=#{discount},
+		`press`=#{press},`publish_time`=#{publishTime},`edition`=#{edition},`page_num`=#{pageNum},`word_num`=#{wordNum},
+		`print_time`=#{printTime},`book_size`=#{bookSize},`paper`=#{paper},`c_id`=#{cId},`inventory`=#{inventory},`on_sale`=#{onSale} where `b_id`=#{bId}
+	</update>
+	<delete id="delete">
+		delete from t_book where b_id=#{bId}
+	</delete>
+
+	<update id="updateInventory">
+		update t_book set `inventory`=#{inventory} where `b_id`=#{bId}
+	</update>
+
+	<update id="updateSaleStatus">
+		update t_book set `on_sale`=#{onSale} where `b_id`=#{bId}
+	</update>
+</mapper>
